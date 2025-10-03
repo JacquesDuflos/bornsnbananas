@@ -52,6 +52,10 @@ func _exit_tree() -> void:
 	replug_after_del()
 
 
+## A simple helper that creates points along a circl in a 2d plan.
+## n : number of points to be drawn (minimum 3)
+## dia : diameter
+## returns : a PackedVector2Array of the calculated points
 func draw_circle(n : int, dia : float) -> PackedVector2Array :
 	var cir : PackedVector2Array
 	for i in n :
@@ -60,22 +64,24 @@ func draw_circle(n : int, dia : float) -> PackedVector2Array :
 	return cir
 
 
+## Move the connected bananas to the previous banana or born after deleting this
+## banana.
 func replug_after_del():
 	var recnx_from = banana_from.get_banana_connected()
 	if recnx_from :
 		var c : Cable = recnx_from.get_cable()
 		var is_from : bool = c.banana_from == recnx_from
 		c.plug_banana(born_from,is_from, true)
-		#c.recnx_cable()
 	
 	var recnx_to = banana_to.get_banana_connected()
 	if recnx_to :
 		var c : Cable = recnx_to.get_cable()
 		var is_from : bool = c.banana_from == recnx_to
 		c.plug_banana(born_to,is_from, true)
-		#c.recnx_cable()
 
 
+## Update the cable mesh when the banana moves. Called by the moved signal
+## of the bananas
 func recnx_cable(_pos : Vector3, banana : Banana):
 	if CableManager.is_ploting : return
 	if not path.curve : return
@@ -87,15 +93,18 @@ func recnx_cable(_pos : Vector3, banana : Banana):
 	path.curve.set_point_position(
 			n_point-1,banana_to.cable_origine.global_position
 	)
-	# TODO refaire la logique du mesh avec le CSGPolygon
-	#path_mesh.generate_and_assign()
 	update_color(color)
 	recursive_replug(banana)
 
-
-func plug_banana(born : Born, from := true, smooth := false):
+## Positions the banana on the born, rotates and scales it accordingly and
+## updates its designation.
+## born : the born to which the banana will be connected
+## is_from : if true, the banana_from will be connected, else the banana_to
+## smooth : the connexion should be instant or with a tween. Usefull for 
+## moving the cable
+func plug_banana(born : Born, is_from := true, smooth := false):
 	var banana : Banana
-	if from :
+	if is_from :
 		banana = banana_from
 		born_from = born
 	else:
@@ -118,6 +127,7 @@ func plug_banana(born : Born, from := true, smooth := false):
 		banana.position = pos
 
 
+## Triggers the plug_banana of the next banana if any when the cable moved
 func recursive_replug(banana : Banana):
 	var next_banana := banana.get_banana_connected()
 	if not next_banana : return
@@ -127,6 +137,7 @@ func recursive_replug(banana : Banana):
 	c.plug_banana(banana, is_from, false)
 
 
+## Creates the first point of the path
 func create_cable_begining(invert := false):
 	var banana := banana_from if not invert else banana_to
 	path.curve.clear_points()
@@ -137,6 +148,7 @@ func create_cable_begining(invert := false):
 	)
 
 
+## Creates the second and last point of the paht
 func create_cable_ending(invert := false):
 	var banana := banana_to if not invert else banana_from
 	path.curve.remove_point(path.curve.point_count - 1)
@@ -147,7 +159,8 @@ func create_cable_ending(invert := false):
 	)
 
 
-func update_color(new_color):
+## Updates the color of the bananas meshes and cable mesh
+func update_color(new_color:Color):
 	banana_from.color = new_color
 	banana_to.color = new_color
 	mat.albedo_color = new_color
