@@ -69,7 +69,6 @@ func start_cable():
 	cable_being_ploted.color = color
 	cable_being_ploted.plug_banana(from)
 	cable_being_ploted.create_cable_begining()
-	cable_being_ploted.path.curve_changed.connect(_on_path_change)
 	add_mouse_point()
 
 
@@ -77,11 +76,6 @@ func save_cable():
 	cable_being_ploted.color_id = color_id
 	cable_being_ploted.plug_banana(to,false)
 	cable_being_ploted.create_cable_ending()
-	cable_being_ploted.path.curve_changed.disconnect(_on_path_change)
 	cables.append(cable_being_ploted)
 	cable_being_ploted = null
 	is_ploting = false
-
-## [b]Deprecated[/b] re-generate the mesh when the path change
-func _on_path_change():
-	return

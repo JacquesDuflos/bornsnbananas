@@ -24,12 +24,12 @@ func _init() -> void:
 	path = Path3D.new()
 	add_child(path)
 	path.curve = Curve3D.new()
-	path.curve.bake_interval = 1
+	path.curve.bake_interval = 0.001
 	path_mesh = CSGPolygon3D.new()
 	add_child(path_mesh)
 	mat = StandardMaterial3D.new()
 	path_mesh.material = mat
-	path_mesh.polygon = draw_circle(6,0.4)
+	path_mesh.polygon = draw_circle(6,0.005)
 	path_mesh.mode = CSGPolygon3D.MODE_PATH
 	banana_from = BANANA.instantiate()
 	banana_from.moved.connect(recnx_cable)
@@ -104,7 +104,12 @@ func plug_banana(born : Born, from := true, smooth := false):
 	banana.visible = true
 	banana.designation = born.designation
 	banana.rotation = born.global_rotation
-	banana.scale = born.scale
+	var born_scale := born.global_transform.basis.get_scale()
+	path_mesh.polygon = draw_circle(6, 0.005 * born_scale.x)
+	path_mesh.path_interval = 0.02 * born_scale.x
+	print(path_mesh.path_interval_type)
+	path.curve.bake_interval = 0.02 * born_scale.x
+	banana.scale = born_scale
 	var pos := -banana.plug_position.global_position + banana.global_position
 	pos += born.plug_next.global_position
 	if smooth :

@@ -7,8 +7,8 @@
 albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_jmqhw"]
-height = 26.0
-radius = 12.0
+height = 0.029644
+radius = 0.0166016
 
 [node name="Banana" type="Node3D" node_paths=PackedStringArray("plug_position", "cable_origine", "offset_for_cable", "plug_next", "cylinder")]
 script = ExtResource("1_ktfdm")
@@ -24,24 +24,24 @@ cylinder = NodePath("banana/Cylinder")
 surface_material_override/0 = SubResource("StandardMaterial3D_mtrgr")
 
 [node name="PluggedPosition" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.018, 0)
 gizmo_extents = 1.0
 
 [node name="RePlug" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 58, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.058, 0)
 gizmo_extents = 1.0
 
 [node name="CableOrigin" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 54, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 0.054, 0)
 gizmo_extents = 1.0
 
 [node name="CableAim" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 104, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 0.1, 0)
 
 [node name="clicmask" type="Area3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="clicmask"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 44, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0051886, 0.045368, 0)
 shape = SubResource("CylinderShape3D_jmqhw")
 
 [connection signal="input_event" from="clicmask" to="." method="_on_click_mask_input_event"]
