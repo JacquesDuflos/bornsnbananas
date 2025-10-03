@@ -12,6 +12,7 @@ func _ready() -> void:
 	cylinder.owner = null
 	cylinder.reparent(self)
 	cylinder.position = Vector3.ZERO
+	cylinder.rotation = Vector3.ZERO
 	cylinder.scale = Vector3.ONE
 	plug_next = Marker3D.new()
 	add_child(plug_next)

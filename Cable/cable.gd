@@ -107,7 +107,6 @@ func plug_banana(born : Born, from := true, smooth := false):
 	var born_scale := born.global_transform.basis.get_scale()
 	path_mesh.polygon = draw_circle(6, 0.005 * born_scale.x)
 	path_mesh.path_interval = 0.02 * born_scale.x
-	print(path_mesh.path_interval_type)
 	path.curve.bake_interval = 0.02 * born_scale.x
 	banana.scale = born_scale
 	var pos := -banana.plug_position.global_position + banana.global_position
@@ -117,7 +116,6 @@ func plug_banana(born : Born, from := true, smooth := false):
 		#await _t.finished
 	else :
 		banana.position = pos
-	#recnx_cable()
 
 
 func recursive_replug(banana : Banana):
