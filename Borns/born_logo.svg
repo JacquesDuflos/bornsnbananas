@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333332 4.2333333"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="born_logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="true"
+     inkscape:zoom="22.406446"
+     inkscape:cx="-1.3612154"
+     inkscape:cy="8.7697977"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path1"
+       style="fill:#ff1616;fill-opacity:1;stroke:none;stroke-width:0.893004;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
+       d="M 2.1166667 0.10852051 A 1.8901922 0.90595013 0 0 0 0.22634277 1.0144084 A 1.8901922 0.90595013 0 0 0 2.1166667 1.9202962 A 1.8901922 0.90595013 0 0 0 4.0069906 1.0144084 A 1.8901922 0.90595013 0 0 0 2.1166667 0.10852051 z M 2.1166667 0.39429118 A 1.2936817 0.6200487 0 0 1 3.4101278 1.0144084 A 1.2936817 0.6200487 0 0 1 2.1166667 1.6345256 A 1.2936817 0.6200487 0 0 1 0.82320557 1.0144084 A 1.2936817 0.6200487 0 0 1 2.1166667 0.39429118 z " />
+    <ellipse
+       style="fill:#ff1616;fill-opacity:1;stroke:none;stroke-width:0.243696;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
+       id="ellipse2"
+       cx="2.1166666"
+       cy="1.014497"
+       rx="0.51582491"
+       ry="0.24722973" />
+    <path
+       style="fill:#ff1616;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
+       d="m 0.71926698,1.9204472 v 1.4779092 c 1.23182612,0.834174 2.06673142,0.5218362 2.90571992,0 V 1.9204472 c -0.8065028,0.4845709 -1.6711148,0.8193866 -2.90571992,0 z"
+       id="path3"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>
