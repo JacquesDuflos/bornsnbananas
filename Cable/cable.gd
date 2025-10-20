@@ -67,6 +67,24 @@ func draw_circle(n : int, dia : float) -> PackedVector2Array :
 ## Move the connected bananas to the previous banana or born after deleting this
 ## banana.
 func replug_after_del():
+	if born_from == banana_to :
+		## self-connected banana
+		var recnx_from = banana_from.get_banana_connected()
+		if recnx_from :
+			var c : Cable = recnx_from.get_cable()
+			var is_from : bool = c.banana_from == recnx_from
+			c.plug_banana(born_to,is_from, true)
+		return
+		
+	if born_to == banana_from :
+		## self-connected banana
+		var recnx_to = banana_to.get_banana_connected()
+		if recnx_to :
+			var c : Cable = recnx_to.get_cable()
+			var is_from : bool = c.banana_from == recnx_to
+			c.plug_banana(born_from,is_from, true)
+		return
+		
 	var recnx_from = banana_from.get_banana_connected()
 	if recnx_from :
 		var c : Cable = recnx_from.get_cable()

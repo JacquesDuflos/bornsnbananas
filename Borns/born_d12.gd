@@ -1,10 +1,10 @@
 @tool
 extends Born
 class_name BornD12
-
-
-func _init() -> void:
-	pass
+## a class to instanciate the complete scene for diameter12mm borns
+## for now it works by creating everythin by code in the ready
+## function, maybe it would be better to do as in this tutorial
+## https://www.youtube.com/watch?v=u9aMR50yjCE&lc=Ugwj9E-q3feQ8_PCoWh4AaABAg.AO7SVEkJNqOAO7USLKos5r
 
 
 func _ready() -> void:

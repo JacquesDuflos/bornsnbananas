@@ -40,12 +40,20 @@ func set_color(col : Color):
 	mat.albedo_color = col
 
 
-## Fetch the CableManager cable list for one connected to this banana
-## and returns it if any. Else returns null value
+## Return the cable (if any) of which this banana is the banana_from
+## or the banana_to. Else returns null value.
 ## should be moved to banana as it doesn't apply to borns
 func get_cable() -> Cable:
 	for cable:Cable in CableManager.cables:
 		if self in [cable.banana_from, cable.banana_to]:
+			return cable
+	return null
+
+
+## Returns the cable object connected to this born
+func get_cable_connected() -> Cable:
+	for cable:Cable in CableManager.cables:
+		if self in [cable.born_from, cable.born_to]:
 			return cable
 	return null
 
@@ -67,13 +75,6 @@ func get_top_banana_connected() -> Born:
 		return next_bana.get_top_banana_connected()
 	else :
 		return self
-
-## identique a get_cable, il faut surement en enlever un des deux
-func get_cable_connected() -> Cable:
-	for cable:Cable in CableManager.cables:
-		if self in [cable.born_from, cable.born_to]:
-			return cable
-	return null
 
 
 ## Either creates a new cable and connect its from born to this one, or

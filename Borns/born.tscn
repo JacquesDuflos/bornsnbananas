@@ -24,11 +24,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_msfr8")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00475074, 0)
 shape = SubResource("CylinderShape3D_rvw8j")
 
-[node name="OffsetForCable" type="Marker3D" parent="." index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.058, 0)
-gizmo_extents = 2.5
-
-[node name="PlugPoint" type="Marker3D" parent="." index="3"]
+[node name="PlugPoint" type="Marker3D" parent="." index="2"]
 gizmo_extents = 2.5
 
 [connection signal="input_event" from="ClickMask" to="." method="_on_click_mask_input_event"]
