@@ -1,10 +1,13 @@
 @tool
 extends Node3D
 class_name Born
+## A 3D object to which can be connected bananas and cables produced by the 
+## CableManager.
 
 ## Un texto que define el punto de connexion. Cualquier banana que se connecta
 ## a este borneo le copiará su designation.
 @export var designation : String
+## The color that will be applyed to the mesh.
 @export var color : Color:
 	set(new_col):
 		color = new_col
@@ -14,7 +17,7 @@ class_name Born
 ## El punto que conincide con el banano que se enchufe en este borneo
 @export var plug_next : Marker3D
 ## El mesh visible
-@export var cylinder: MeshInstance3D
+@export var cylinder : MeshInstance3D
 
 ## El potensial electrico relativo a la tierra del sistema
 var u : float = 0.0
@@ -28,6 +31,7 @@ func _ready() -> void:
 	set_color(color)
 
 
+## Changes the solor of the cylinder mesh
 func set_color(col : Color):
 	if not cylinder : return
 	#if not cylinder.get_surface_override_material(0):
@@ -36,6 +40,9 @@ func set_color(col : Color):
 	mat.albedo_color = col
 
 
+## Fetch the CableManager cable list for one connected to this banana
+## and returns it if any. Else returns null value
+## should be moved to banana as it doesn't apply to borns
 func get_cable() -> Cable:
 	for cable:Cable in CableManager.cables:
 		if self in [cable.banana_from, cable.banana_to]:
@@ -43,6 +50,7 @@ func get_cable() -> Cable:
 	return null
 
 
+## If a banana is connected to this born, returns it, else returns null
 func get_banana_connected() -> Banana:
 	for cable :Cable in CableManager.cables:
 		if cable.born_from == self:
@@ -52,10 +60,15 @@ func get_banana_connected() -> Banana:
 	return null
 
 
-func get_top_banana_connected() -> Banana:
-	return self if not get_banana_connected() else get_banana_connected()
+## Recursively looks for the banana connected to this one. Else returns self
+func get_top_banana_connected() -> Born:
+	var next_bana := get_banana_connected()
+	if next_bana :
+		return next_bana.get_top_banana_connected()
+	else :
+		return self
 
-
+## identique a get_cable, il faut surement en enlever un des deux
 func get_cable_connected() -> Cable:
 	for cable:Cable in CableManager.cables:
 		if self in [cable.born_from, cable.born_to]:
@@ -63,19 +76,23 @@ func get_cable_connected() -> Cable:
 	return null
 
 
+## Either creates a new cable and connect its from born to this one, or
+## or connect the to born of the cable presently in creation and saves it
+## in the CableManager
 func start_or_finish_cable():
-	if get_banana_connected():
-		return
+	var actual_born : Born = get_top_banana_connected()
 	#print("borne cliquee")
 	if CableManager.is_ploting:
 		# terminer de connecter
-		CableManager.to = self
+		CableManager.to = actual_born
 		CableManager.save_cable()
 	else :
-		CableManager.from = self
+		CableManager.from = actual_born
 		CableManager.start_cable()
 
 
+## Frees the cable connected to this banana if any. This will trigger the
+## reconnect methode of the cables connected to this one
 func delete_cable():
 	var cable := get_cable()
 	if not cable : return
