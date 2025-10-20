@@ -68,34 +68,27 @@ func draw_circle(n : int, dia : float) -> PackedVector2Array :
 ## banana.
 func replug_after_del():
 	if born_from == banana_to :
-		## self-connected banana
-		var recnx_from = banana_from.get_banana_connected()
-		if recnx_from :
-			var c : Cable = recnx_from.get_cable()
-			var is_from : bool = c.banana_from == recnx_from
-			c.plug_banana(born_to,is_from, true)
+		# self-connected cable
+		replug_one_banana(banana_from, born_to)
 		return
 		
 	if born_to == banana_from :
-		## self-connected banana
-		var recnx_to = banana_to.get_banana_connected()
-		if recnx_to :
-			var c : Cable = recnx_to.get_cable()
-			var is_from : bool = c.banana_from == recnx_to
-			c.plug_banana(born_from,is_from, true)
+		# self-connected cable
+		replug_one_banana(banana_to, born_from)
 		return
-		
-	var recnx_from = banana_from.get_banana_connected()
-	if recnx_from :
-		var c : Cable = recnx_from.get_cable()
-		var is_from : bool = c.banana_from == recnx_from
-		c.plug_banana(born_from,is_from, true)
-	
-	var recnx_to = banana_to.get_banana_connected()
-	if recnx_to :
-		var c : Cable = recnx_to.get_cable()
-		var is_from : bool = c.banana_from == recnx_to
-		c.plug_banana(born_to,is_from, true)
+
+	replug_one_banana(banana_from, born_from)
+	replug_one_banana(banana_to, born_to)
+
+
+## Replug the specified origin banana's connected banana (if any) to the
+## specified born.
+func replug_one_banana(origin_banana : Banana, to_born : Born):
+	var recnx := origin_banana.get_banana_connected()
+	if recnx :
+		var c: Cable = recnx.get_cable()
+		var is_from : bool = c.banana_from == recnx
+		c.plug_banana(to_born, is_from, true)
 
 
 ## Update the cable mesh when the banana moves. Called by the moved signal
@@ -140,7 +133,6 @@ func plug_banana(born : Born, is_from := true, smooth := false):
 	pos += born.plug_next.global_position
 	if smooth :
 		var _t = create_tween().tween_property(banana,"position",pos,0.4)
-		#await _t.finished
 	else :
 		banana.position = pos
 
