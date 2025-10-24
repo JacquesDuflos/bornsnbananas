@@ -9,8 +9,6 @@ class_name Banana
 ## El punto a donde se dirige el cable de este banano al arrancar
 @export var offset_for_cable: Marker3D
 
-# TODO : stop using clicable and use get_connected_banana()!=null instead
-var clicable : bool ## used to prevent clicing when exist a repluged. 
 var previous_pos : Vector3  ## to send the moved signal
 
 ## Signal emmited every time the local position of this banana changes.
@@ -59,7 +57,6 @@ func get_original_borne() -> Born:
 
 ## Return the cable (if any) of which this banana is the banana_from
 ## or the banana_to. Else returns null value.
-## should be moved to banana as it doesn't apply to borns
 func get_cable() -> Cable:
 	for cable:Cable in CableManager.cables:
 		if self in [cable.banana_from, cable.banana_to]:
