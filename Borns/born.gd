@@ -19,13 +19,6 @@ class_name Born
 ## El mesh visible
 @export var cylinder : MeshInstance3D
 
-## El potensial electrico relativo a la tierra del sistema
-var u : float = 0.0
-
-## La intensidad electrica que va del banano conectado a la 
-## connexion fija
-var i : float = 0.0
-
 
 func _ready() -> void:
 	set_color(color)
