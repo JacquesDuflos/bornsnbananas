@@ -33,15 +33,6 @@ func set_color(col : Color):
 	mat.albedo_color = col
 
 
-## Return the cable (if any) of which this banana is the banana_from
-## or the banana_to. Else returns null value.
-## should be moved to banana as it doesn't apply to borns
-func get_cable() -> Cable:
-	for cable:Cable in CableManager.cables:
-		if self in [cable.banana_from, cable.banana_to]:
-			return cable
-	return null
-
 
 ## Returns the cable object connected to this born
 func get_cable_connected() -> Cable:
@@ -85,24 +76,16 @@ func start_or_finish_cable():
 		CableManager.start_cable()
 
 
-## Frees the cable connected to this banana if any. This will trigger the
-## reconnect methode of the cables connected to this one
-func delete_cable():
-	var cable := get_cable()
-	if not cable : return
-	cable.queue_free()
-
 
 func _on_click_mask_input_event(
 		_camera: Node, event: InputEvent, _event_position: Vector3,
 		_normal: Vector3, _shape_idx: int
-) -> void:
-	if Engine.is_editor_hint() : return
-	if not event is InputEventMouseButton: return
+) -> Variant:
+	if Engine.is_editor_hint() : return false
+	if not event is InputEventMouseButton: return false
 	
 	# on left clic
 	if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		start_or_finish_cable()
-	# on right clic
-	if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		delete_cable()
+		return "cable created"
+	return true

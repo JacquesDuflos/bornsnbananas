@@ -29,6 +29,20 @@ func _process(_delta: float) -> void:
 	previous_pos = position
 
 
+func _on_click_mask_input_event(
+		_camera: Node, event: InputEvent, _event_position: Vector3,
+		_normal: Vector3, _shape_idx: int
+) -> Variant:
+	if not super(_camera, event, _event_position, _normal, _shape_idx) :
+		return false
+	
+	# on right clic
+	if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		delete_cable()
+		return "cable deleted"
+	return true
+
+
 ## Return the first born to which is connected the banana.
 func get_original_borne() -> Born:
 	var born : Born
@@ -41,3 +55,21 @@ func get_original_borne() -> Born:
 		return born.get_original_borne()
 	else :
 		return born
+
+
+## Return the cable (if any) of which this banana is the banana_from
+## or the banana_to. Else returns null value.
+## should be moved to banana as it doesn't apply to borns
+func get_cable() -> Cable:
+	for cable:Cable in CableManager.cables:
+		if self in [cable.banana_from, cable.banana_to]:
+			return cable
+	return null
+
+
+## Frees the cable connected to this banana if any. This will trigger the
+## reconnect methode of the cables connected to this one
+func delete_cable():
+	var cable := get_cable()
+	if not cable : return
+	cable.queue_free()
