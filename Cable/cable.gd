@@ -101,7 +101,7 @@ func make_static(recursive : bool = false, is_from : bool = true) -> void :
 	var next_cable := next_ban.get_cable()
 	if not next_cable : return
 	var next_is_from :bool = next_ban == next_cable.banana_from
-	next_cable.make_dynamic(true, next_is_from)
+	next_cable.make_static(true, next_is_from)
 
 ## Creates a CSG polygon and hide the static mesh.
 ## if recursive parameter set to true, will make any connected cable
@@ -211,11 +211,12 @@ func plug_banana(born : Born, is_from := true, smooth := false):
 	var pos := -banana.plug_position.global_position + banana.global_position
 	pos += born.plug_next.global_position
 	if smooth :
-		var _t = create_tween().tween_property(banana,"position",pos,0.4)
+		var _t := create_tween().tween_property(banana,"position",pos,0.4)
 		await _t.finished
+		plug_ended.emit()
 	else :
 		banana.position = pos
-	plug_ended.emit()
+		plug_ended.emit()
 
 
 ## Triggers the plug_banana of the next banana if any when the cable moved
