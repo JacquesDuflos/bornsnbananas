@@ -64,7 +64,7 @@ func add_mouse_point():
 
 func start_cable():
 	is_ploting = true
-	cable_being_ploted = Cable.new()
+	cable_being_ploted = Cable.new_cable()
 	get_tree().root.add_child(cable_being_ploted)
 	cable_being_ploted.color = color
 	cable_being_ploted.plug_banana(from)

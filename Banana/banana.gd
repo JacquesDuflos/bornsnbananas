@@ -1,6 +1,7 @@
 @tool
 extends Born
 class_name Banana
+## A 3D node that can plug in a born and that is connected to a cable
 
 ## El punto que conincide con el borneo en el que se enchufa este banano
 @export var plug_position : Marker3D
@@ -9,22 +10,23 @@ class_name Banana
 ## El punto a donde se dirige el cable de este banano al arrancar
 @export var offset_for_cable: Marker3D
 
-var previous_pos : Vector3  ## to send the moved signal
+## to send the moved signal
+var _previous_pos : Vector3
 
 ## Signal emmited every time the local position of this banana changes.
 ## It is used to update the cable mesh
-signal moved
+signal moved(vec : Vector3, bana : Banana)
 
 
 func _ready() -> void:
 	super()
-	previous_pos = position
+	_previous_pos = position
 
 
 func _process(_delta: float) -> void:
-	if position != previous_pos :
+	if position != _previous_pos :
 		moved.emit(position, self)
-	previous_pos = position
+	_previous_pos = position
 
 
 func _on_click_mask_input_event(

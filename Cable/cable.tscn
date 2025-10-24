@@ -1,0 +1,52 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvx44koknarr"]
+
+[ext_resource type="Script" uid="uid://dooc27fpo070s" path="res://addons/bornsnbananas/Cable/cable.gd" id="1_3ylgr"]
+[ext_resource type="PackedScene" uid="uid://dj2qvnknfbvbs" path="res://addons/bornsnbananas/Banana/banana.tscn" id="1_etwv6"]
+
+[sub_resource type="Curve3D" id="Curve3D_3ylgr"]
+bake_interval = 0.01
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0.01, 0.1, 0, 0.01, 0.054, 0, 2.01, 0.1, 0, 0, 0, 0, 2.01, 0.054, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_om4oo"]
+
+[node name="Cable" type="Node3D" node_paths=PackedStringArray("banana_from", "banana_to", "path", "dynamic_mesh", "static_mesh")]
+script = ExtResource("1_3ylgr")
+banana_from = NodePath("BananaFrom")
+banana_to = NodePath("BananaTo")
+path = NodePath("Path3D")
+dynamic_mesh = NodePath("DynamicMesh")
+static_mesh = NodePath("StaticMesh")
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = SubResource("Curve3D_3ylgr")
+debug_custom_color = Color(0.7215767, 0.18483126, 0.46705854, 1)
+
+[node name="StaticMesh" type="MeshInstance3D" parent="."]
+
+[node name="DynamicMesh" type="CSGPolygon3D" parent="."]
+mode = 2
+path_node = NodePath("../Path3D")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = SubResource("StandardMaterial3D_om4oo")
+
+[node name="BananaFrom" parent="." instance=ExtResource("1_etwv6")]
+visible = false
+
+[node name="BananaTo" parent="." instance=ExtResource("1_etwv6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+visible = false
+
+[connection signal="moved" from="BananaFrom" to="." method="recnx_cable"]
+[connection signal="moved" from="BananaTo" to="." method="recnx_cable"]

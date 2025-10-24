@@ -5,11 +5,13 @@ class_name Cable
 
 var born_from : Born ## Born to which is connected the first end
 var born_to : Born ## Born to which is connected the second end
-var banana_from : Banana ## First banana of the cable
-var banana_to : Banana ## Second banana of the cable
+@export var banana_from : Banana ## First banana of the cable
+@export var banana_to : Banana ## Second banana of the cable
 
-var path : Path3D ## The path describing the cable
-var path_mesh : CSGPolygon3D ## The mesh following the path
+@export var path : Path3D ## The path describing the cable
+@export var dynamic_mesh : CSGPolygon3D ## The mesh following the path
+@export var static_mesh : MeshInstance3D ## the mesh object used when the cable stops mooving
+var is_static : bool ## true if the cable is curently static
 var mat : StandardMaterial3D ## The material applyed to the path mesh
 var color_id : int ## [b] Deprecated : use color instead [/b] the color id of the color manager
 var color : Color : ## the color of the cable and bananas
@@ -17,33 +19,48 @@ var color : Color : ## the color of the cable and bananas
 		color = c
 		update_color(color)
 
+signal plug_ended
+
+const CABLE = preload("uid://bvx44koknarr")
 const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
 
 
-func _init() -> void:
-	path = Path3D.new()
-	add_child(path)
-	path.curve = Curve3D.new()
-	path.curve.bake_interval = 0.001
-	path_mesh = CSGPolygon3D.new()
-	add_child(path_mesh)
-	mat = StandardMaterial3D.new()
-	path_mesh.material = mat
-	path_mesh.polygon = draw_circle(6,0.005)
-	path_mesh.mode = CSGPolygon3D.MODE_PATH
-	banana_from = BANANA.instantiate()
-	banana_from.moved.connect(recnx_cable)
-	banana_from.visible = false
-	add_child(banana_from)
-	banana_to = BANANA.instantiate()
-	banana_to.moved.connect(recnx_cable)
-	banana_to.visible = false
-	add_child(banana_to)
-	update_color(color)
+static func new_cable() -> Cable:
+	var new_cab : Cable = CABLE.instantiate()
+	return new_cab
+
+
+#func _init() -> void:
+	#path = Path3D.new()
+	#add_child(path)
+	#static_mesh = MeshInstance3D.new()
+	#add_child(static_mesh)
+	#path.curve = Curve3D.new()
+	#path.curve.bake_interval = 0.001
+	#dynamic_mesh = CSGPolygon3D.new()
+	#add_child(dynamic_mesh)
+	#mat = StandardMaterial3D.new()
+	#dynamic_mesh.material = mat
+	## TODO dans replug() il y a un autre draw_circle qui prend en compte
+	## l'echelle des bornes. faudrait homogeneiser tout ca.
+	#dynamic_mesh.polygon = draw_circle(6,0.005)
+	#dynamic_mesh.mode = CSGPolygon3D.MODE_PATH
+	#banana_from = BANANA.instantiate()
+	#banana_from.moved.connect(recnx_cable)
+	#banana_from.visible = false
+	#add_child(banana_from)
+	#banana_to = BANANA.instantiate()
+	#banana_to.moved.connect(recnx_cable)
+	#banana_to.visible = false
+	#add_child(banana_to)
+	#update_color(color)
 
 
 func _ready() -> void:
-	path_mesh.path_node = path.get_path()
+	mat = dynamic_mesh.material
+	dynamic_mesh.polygon = draw_circle(6,0.005)
+	#dynamic_mesh.path_node = path.get_path()
+	update_color(color)
 
 
 func _exit_tree() -> void:
@@ -62,6 +79,60 @@ func draw_circle(n : int, dia : float) -> PackedVector2Array :
 		var alpha := i * 2 * PI / n
 		cir.append(Vector2(cos(alpha) * dia, sin(alpha) * dia))
 	return cir
+
+
+## Turns the CSG polygon into a static mesh, and free any existing previous
+## static mesh. Usefull to boost performence
+## when the cable stops moving
+func make_static(recursive : bool = false, is_from : bool = true) -> void :
+	if is_static :
+		printerr ("cable already static")
+		return
+	is_static = true
+	await get_tree().process_frame
+	static_mesh.mesh = dynamic_mesh.bake_static_mesh()
+	static_mesh.show()
+	dynamic_mesh.free()
+	
+	if not recursive : return
+	var ban : Banana = banana_from if is_from else banana_to
+	var next_ban := ban.get_banana_connected()
+	if not next_ban : return
+	var next_cable := next_ban.get_cable()
+	if not next_cable : return
+	var next_is_from :bool = next_ban == next_cable.banana_from
+	next_cable.make_dynamic(true, next_is_from)
+
+## Creates a CSG polygon and hide the static mesh.
+## if recursive parameter set to true, will make any connected cable
+## dynamic too.
+## is_from only applies if recursive set to true. If is_from true, will look
+## for the cables connected to the from banana
+func make_dynamic(recursive : bool = false, is_from : bool = true) -> void :
+	if not is_static :
+		printerr("cable already dynamic")
+		return
+	is_static = false
+	static_mesh.hide()
+	if !dynamic_mesh:
+		dynamic_mesh = CSGPolygon3D.new()
+		add_child(dynamic_mesh)
+	dynamic_mesh.material = mat
+	var born_scale = banana_from.global_transform.basis.get_scale()
+	dynamic_mesh.polygon = draw_circle(6,0.005 * born_scale.x)
+	dynamic_mesh.path_interval = 0.02 * born_scale.x
+	path.curve.bake_interval = 0.02 * born_scale.x
+	dynamic_mesh.mode = CSGPolygon3D.MODE_PATH
+	dynamic_mesh.path_node = path.get_path()
+	
+	if not recursive : return
+	var ban : Banana = banana_from if is_from else banana_to
+	var next_ban := ban.get_banana_connected()
+	if not next_ban : return
+	var next_cable := next_ban.get_cable()
+	if not next_cable : return
+	var next_is_from :bool = next_ban == next_cable.banana_from
+	next_cable.make_dynamic(true, next_is_from)
 
 
 ## Move the connected bananas to the previous banana or born after deleting this
@@ -88,7 +159,10 @@ func replug_one_banana(origin_banana : Banana, to_born : Born):
 	if recnx :
 		var c: Cable = recnx.get_cable()
 		var is_from : bool = c.banana_from == recnx
+		c.make_dynamic(true, is_from)
 		c.plug_banana(to_born, is_from, true)
+		await c.plug_ended
+		c.make_static(true, is_from)
 
 
 ## Update the cable mesh when the banana moves. Called by the moved signal
@@ -107,6 +181,7 @@ func recnx_cable(_pos : Vector3, banana : Banana):
 	update_color(color)
 	recursive_replug(banana)
 
+
 ## Positions the banana on the born, rotates and scales it accordingly and
 ## updates its designation.
 ## born : the born to which the banana will be connected
@@ -114,6 +189,7 @@ func recnx_cable(_pos : Vector3, banana : Banana):
 ## smooth : the connexion should be instant or with a tween. Usefull for 
 ## moving the cable
 func plug_banana(born : Born, is_from := true, smooth := false):
+	#make_dynamic()
 	var banana : Banana
 	if is_from :
 		banana = banana_from
@@ -125,16 +201,21 @@ func plug_banana(born : Born, is_from := true, smooth := false):
 	banana.designation = born.designation
 	banana.rotation = born.global_rotation
 	var born_scale := born.global_transform.basis.get_scale()
-	path_mesh.polygon = draw_circle(6, 0.005 * born_scale.x)
-	path_mesh.path_interval = 0.02 * born_scale.x
+	if is_static:
+		printerr("banana was plugged while cable static")
+	else :
+		dynamic_mesh.polygon = draw_circle(6, 0.005 * born_scale.x)
+		dynamic_mesh.path_interval = 0.02 * born_scale.x
 	path.curve.bake_interval = 0.02 * born_scale.x
 	banana.scale = born_scale
 	var pos := -banana.plug_position.global_position + banana.global_position
 	pos += born.plug_next.global_position
 	if smooth :
 		var _t = create_tween().tween_property(banana,"position",pos,0.4)
+		await _t.finished
 	else :
 		banana.position = pos
+	plug_ended.emit()
 
 
 ## Triggers the plug_banana of the next banana if any when the cable moved
@@ -156,6 +237,7 @@ func create_cable_begining(invert := false):
 			Vector3.ZERO,
 			banana.offset_for_cable.global_position - banana.cable_origine.global_position,
 	)
+	make_dynamic()
 
 
 ## Creates the second and last point of the paht
@@ -167,6 +249,7 @@ func create_cable_ending(invert := false):
 			banana.offset_for_cable.global_position - banana.cable_origine.global_position,
 			Vector3.ZERO,
 	)
+	make_static()
 
 
 ## Updates the color of the bananas meshes and cable mesh
