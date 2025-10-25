@@ -161,8 +161,6 @@ func replug_one_banana(origin_banana : Banana, to_born : Born):
 		var is_from : bool = c.banana_from == recnx
 		c.make_dynamic(true, is_from)
 		c.plug_banana(to_born, is_from, true)
-		await c.plug_ended
-		c.make_static(true, is_from)
 
 
 ## Update the cable mesh when the banana moves. Called by the moved signal
@@ -187,7 +185,7 @@ func recnx_cable(_pos : Vector3, banana : Banana):
 ## born : the born to which the banana will be connected
 ## is_from : if true, the banana_from will be connected, else the banana_to
 ## smooth : the connexion should be instant or with a tween. Usefull for 
-## moving the cable
+## moving the cable. in that case, will make_static recursive after
 func plug_banana(born : Born, is_from := true, smooth := false):
 	#make_dynamic()
 	var banana : Banana
@@ -213,10 +211,9 @@ func plug_banana(born : Born, is_from := true, smooth := false):
 	if smooth :
 		var _t := create_tween().tween_property(banana,"position",pos,0.4)
 		await _t.finished
-		plug_ended.emit()
+		make_static(true, is_from)
 	else :
 		banana.position = pos
-		plug_ended.emit()
 
 
 ## Triggers the plug_banana of the next banana if any when the cable moved
