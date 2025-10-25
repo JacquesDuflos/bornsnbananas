@@ -32,12 +32,11 @@ const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
 static func new_cable() -> Cable:
 	var new_cab : Cable = CABLE.instantiate()
 	new_cab.path.curve = new_cab.path.curve.duplicate()
+	new_cab.dynamic_mesh.material = new_cab.dynamic_mesh.material.duplicate()
+	new_cab.mat = new_cab.dynamic_mesh.material
 	return new_cab
 
 
-	#add_child(static_mesh)
-	## l'echelle des bornes. faudrait homogeneiser tout ca.
-	#dynamic_mesh.polygon = draw_circle(6,0.005)
 func _ready() -> void:
 	mat = dynamic_mesh.material
 	dynamic_mesh.polygon = draw_circle(6,0.005)
