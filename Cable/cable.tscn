@@ -42,7 +42,11 @@ path_joined = false
 material = SubResource("StandardMaterial3D_om4oo")
 
 [node name="BananaFrom" parent="." instance=ExtResource("1_etwv6")]
-visible = false
+
+[node name="Label3D" type="Label3D" parent="BananaFrom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.049740344, 0.04231523, 0)
+pixel_size = 0.001
+text = "true"
 
 [node name="BananaTo" parent="." instance=ExtResource("1_etwv6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)

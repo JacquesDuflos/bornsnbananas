@@ -66,6 +66,7 @@ func start_cable():
 	is_ploting = true
 	cable_being_ploted = Cable.new_cable()
 	get_tree().root.add_child(cable_being_ploted)
+	color = Color.from_hsv(randf(), 0.5, 0.5)
 	cable_being_ploted.color = color
 	cable_being_ploted.plug_banana(from)
 	cable_being_ploted.create_cable_begining()

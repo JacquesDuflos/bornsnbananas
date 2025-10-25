@@ -11,7 +11,11 @@ var born_to : Born ## Born to which is connected the second end
 @export var path : Path3D ## The path describing the cable
 @export var dynamic_mesh : CSGPolygon3D ## The mesh following the path
 @export var static_mesh : MeshInstance3D ## the mesh object used when the cable stops mooving
-var is_static : bool ## true if the cable is curently static
+## true if the cable is curently static
+var is_static : bool :
+	set(value):
+		is_static = value
+		$BananaFrom/Label3D.text = "true" if is_static else "false"
 var mat : StandardMaterial3D ## The material applyed to the path mesh
 var color_id : int ## [b] Deprecated : use color instead [/b] the color id of the color manager
 var color : Color : ## the color of the cable and bananas
@@ -27,39 +31,18 @@ const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
 
 static func new_cable() -> Cable:
 	var new_cab : Cable = CABLE.instantiate()
+	new_cab.path.curve = new_cab.path.curve.duplicate()
 	return new_cab
 
 
-#func _init() -> void:
-	#path = Path3D.new()
-	#add_child(path)
-	#static_mesh = MeshInstance3D.new()
 	#add_child(static_mesh)
-	#path.curve = Curve3D.new()
-	#path.curve.bake_interval = 0.001
-	#dynamic_mesh = CSGPolygon3D.new()
-	#add_child(dynamic_mesh)
-	#mat = StandardMaterial3D.new()
-	#dynamic_mesh.material = mat
-	## TODO dans replug() il y a un autre draw_circle qui prend en compte
 	## l'echelle des bornes. faudrait homogeneiser tout ca.
 	#dynamic_mesh.polygon = draw_circle(6,0.005)
-	#dynamic_mesh.mode = CSGPolygon3D.MODE_PATH
-	#banana_from = BANANA.instantiate()
-	#banana_from.moved.connect(recnx_cable)
-	#banana_from.visible = false
-	#add_child(banana_from)
-	#banana_to = BANANA.instantiate()
-	#banana_to.moved.connect(recnx_cable)
-	#banana_to.visible = false
-	#add_child(banana_to)
-	#update_color(color)
-
-
 func _ready() -> void:
 	mat = dynamic_mesh.material
 	dynamic_mesh.polygon = draw_circle(6,0.005)
 	#dynamic_mesh.path_node = path.get_path()
+	#color = Color.from_hsv(randf(), 0.5, 0.5)
 	update_color(color)
 
 
@@ -109,7 +92,7 @@ func make_static(recursive : bool = false, is_from : bool = true) -> void :
 ## is_from only applies if recursive set to true. If is_from true, will look
 ## for the cables connected to the from banana
 func make_dynamic(recursive : bool = false, is_from : bool = true) -> void :
-	if not is_static :
+	if is_static :
 		printerr("cable already dynamic")
 		return
 	is_static = false
