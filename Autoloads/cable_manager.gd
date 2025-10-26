@@ -28,7 +28,7 @@ var color : Color :
 			cable_being_ploted.color = color
 ## La distancia frente a la camara a cual se mantiene el cable
 ## mientras se connecta
-const ARM_LENGTH = 400
+const ARM_LENGTH = 40
 
 ## Sent whenever a cable is being started or ended.
 signal layout_changed

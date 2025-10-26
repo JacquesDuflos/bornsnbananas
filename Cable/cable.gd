@@ -15,7 +15,7 @@ var born_to : Born ## Born to which is connected the second end
 var is_static : bool :
 	set(value):
 		is_static = value
-		$BananaFrom/Label3D.text = "true" if is_static else "false"
+		#$BananaFrom/Label3D.text = "true" if is_static else "false"
 var mat : StandardMaterial3D ## The material applyed to the path mesh
 var color_id : int ## [b] Deprecated : use color instead [/b] the color id of the color manager
 var color : Color : ## the color of the cable and bananas
@@ -36,32 +36,6 @@ static func new_cable(color : Color = Color.ORANGE_RED) -> Cable:
 	new_cab.mat = new_cab.dynamic_mesh.material
 	new_cab.color = color
 	return new_cab
-
-
-#func _init() -> void:
-	#path = Path3D.new()
-	#add_child(path)
-	#static_mesh = MeshInstance3D.new()
-	#add_child(static_mesh)
-	#path.curve = Curve3D.new()
-	#path.curve.bake_interval = 0.001
-	#dynamic_mesh = CSGPolygon3D.new()
-	#add_child(dynamic_mesh)
-	#mat = StandardMaterial3D.new()
-	#dynamic_mesh.material = mat
-	## TODO dans replug() il y a un autre draw_circle qui prend en compte
-	## l'echelle des bornes. faudrait homogeneiser tout ca.
-	#dynamic_mesh.polygon = draw_circle(6,0.005)
-	#dynamic_mesh.mode = CSGPolygon3D.MODE_PATH
-	#banana_from = BANANA.instantiate()
-	#banana_from.moved.connect(recnx_cable)
-	#banana_from.visible = false
-	#add_child(banana_from)
-	#banana_to = BANANA.instantiate()
-	#banana_to.moved.connect(recnx_cable)
-	#banana_to.visible = false
-	#add_child(banana_to)
-	#update_color(color)
 
 
 func _ready() -> void:
