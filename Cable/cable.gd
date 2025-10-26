@@ -29,12 +29,39 @@ const CABLE = preload("uid://bvx44koknarr")
 const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
 
 
-static func new_cable() -> Cable:
+static func new_cable(color : Color = Color.ORANGE_RED) -> Cable:
 	var new_cab : Cable = CABLE.instantiate()
 	new_cab.path.curve = new_cab.path.curve.duplicate()
 	new_cab.dynamic_mesh.material = new_cab.dynamic_mesh.material.duplicate()
 	new_cab.mat = new_cab.dynamic_mesh.material
+	new_cab.color = color
 	return new_cab
+
+
+#func _init() -> void:
+	#path = Path3D.new()
+	#add_child(path)
+	#static_mesh = MeshInstance3D.new()
+	#add_child(static_mesh)
+	#path.curve = Curve3D.new()
+	#path.curve.bake_interval = 0.001
+	#dynamic_mesh = CSGPolygon3D.new()
+	#add_child(dynamic_mesh)
+	#mat = StandardMaterial3D.new()
+	#dynamic_mesh.material = mat
+	## TODO dans replug() il y a un autre draw_circle qui prend en compte
+	## l'echelle des bornes. faudrait homogeneiser tout ca.
+	#dynamic_mesh.polygon = draw_circle(6,0.005)
+	#dynamic_mesh.mode = CSGPolygon3D.MODE_PATH
+	#banana_from = BANANA.instantiate()
+	#banana_from.moved.connect(recnx_cable)
+	#banana_from.visible = false
+	#add_child(banana_from)
+	#banana_to = BANANA.instantiate()
+	#banana_to.moved.connect(recnx_cable)
+	#banana_to.visible = false
+	#add_child(banana_to)
+	#update_color(color)
 
 
 func _ready() -> void:
@@ -92,13 +119,13 @@ func make_static(recursive : bool = false, is_from : bool = true) -> void :
 ## for the cables connected to the from banana
 func make_dynamic(recursive : bool = false, is_from : bool = true) -> void :
 	if is_static :
+		is_static = false
+		static_mesh.hide()
+		if !dynamic_mesh:
+			dynamic_mesh = CSGPolygon3D.new()
+			add_child(dynamic_mesh)
+	else :
 		printerr("cable already dynamic")
-		return
-	is_static = false
-	static_mesh.hide()
-	if !dynamic_mesh:
-		dynamic_mesh = CSGPolygon3D.new()
-		add_child(dynamic_mesh)
 	dynamic_mesh.material = mat
 	var born_scale = banana_from.global_transform.basis.get_scale()
 	dynamic_mesh.polygon = draw_circle(6,0.005 * born_scale.x)
