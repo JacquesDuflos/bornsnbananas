@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvx44koknarr"]
+[gd_scene load_steps=6 format=3 uid="uid://bvx44koknarr"]
 
 [ext_resource type="Script" uid="uid://dooc27fpo070s" path="res://addons/bornsnbananas/Cable/cable.gd" id="1_3ylgr"]
 [ext_resource type="PackedScene" uid="uid://dj2qvnknfbvbs" path="res://addons/bornsnbananas/Banana/banana.tscn" id="1_etwv6"]
@@ -13,13 +13,17 @@ point_count = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_om4oo"]
 
-[node name="Cable" type="Node3D" node_paths=PackedStringArray("banana_from", "banana_to", "path", "dynamic_mesh", "static_mesh")]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_3ylgr"]
+
+[node name="Cable" type="Node3D" node_paths=PackedStringArray("banana_from", "banana_to", "path", "dynamic_mesh", "static_mesh", "click_mask", "collision_shape_3d")]
 script = ExtResource("1_3ylgr")
 banana_from = NodePath("BananaFrom")
 banana_to = NodePath("BananaTo")
 path = NodePath("Path3D")
 dynamic_mesh = NodePath("DynamicMesh")
 static_mesh = NodePath("StaticMesh")
+click_mask = NodePath("ClickMask")
+collision_shape_3d = NodePath("ClickMask/CollisionShape3D")
 
 [node name="Path3D" type="Path3D" parent="."]
 curve = SubResource("Curve3D_3ylgr")
@@ -42,10 +46,19 @@ path_joined = false
 material = SubResource("StandardMaterial3D_om4oo")
 
 [node name="BananaFrom" parent="." instance=ExtResource("1_etwv6")]
+visible = false
 
 [node name="BananaTo" parent="." instance=ExtResource("1_etwv6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 visible = false
 
+[node name="ClickMask" type="Area3D" parent="."]
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ClickMask"]
+shape = SubResource("ConcavePolygonShape3D_3ylgr")
+
 [connection signal="moved" from="BananaFrom" to="." method="recnx_cable"]
 [connection signal="moved" from="BananaTo" to="." method="recnx_cable"]
+[connection signal="mouse_entered" from="ClickMask" to="." method="_on_click_mask_mouse_entered"]
+[connection signal="mouse_exited" from="ClickMask" to="." method="_on_click_mask_mouse_exited"]

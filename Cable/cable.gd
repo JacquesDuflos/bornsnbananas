@@ -11,6 +11,9 @@ var born_to : Born ## Born to which is connected the second end
 @export var path : Path3D ## The path describing the cable
 @export var dynamic_mesh : CSGPolygon3D ## The mesh following the path
 @export var static_mesh : MeshInstance3D ## the mesh object used when the cable stops mooving
+@export var click_mask : Area3D ## The area to detect when cable is clicked
+@export var collision_shape_3d: CollisionShape3D ## The click_mask collition shape
+
 ## true if the cable is curently static
 var is_static : bool :
 	set(value):
@@ -22,8 +25,7 @@ var color : Color : ## the color of the cable and bananas
 	set(c):
 		color = c
 		update_color(color)
-
-signal plug_ended
+var hovered : bool = false
 
 const CABLE = preload("uid://bvx44koknarr")
 const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
@@ -35,6 +37,7 @@ static func new_cable(color : Color = Color.ORANGE_RED) -> Cable:
 	new_cab.dynamic_mesh.material = new_cab.dynamic_mesh.material.duplicate()
 	new_cab.mat = new_cab.dynamic_mesh.material
 	new_cab.color = color
+	new_cab.collision_shape_3d.shape = new_cab.collision_shape_3d.shape.duplicate()
 	return new_cab
 
 
@@ -50,6 +53,23 @@ func _exit_tree() -> void:
 	CableManager.cables.erase(self)
 	CableManager.layout_changed.emit()
 	replug_after_del()
+
+
+func _input(event: InputEvent) -> void:
+	if hovered:
+		if (event is InputEventMouseButton and
+		event.button_index == MOUSE_BUTTON_LEFT and
+		event.is_pressed()
+		):
+			print ("cable clicked")
+
+
+func _on_click_mask_mouse_entered() -> void:
+	hovered = true
+
+
+func _on_click_mask_mouse_exited() -> void:
+	hovered = false
 
 
 ## A simple helper that creates points along a circl in a 2d plan.
@@ -73,6 +93,8 @@ func make_static(recursive : bool = false, is_from : bool = true) -> void :
 		return
 	is_static = true
 	await get_tree().process_frame
+	click_mask.monitorable = true
+	collision_shape_3d.shape = dynamic_mesh.bake_collision_shape()
 	static_mesh.mesh = dynamic_mesh.bake_static_mesh()
 	static_mesh.show()
 	dynamic_mesh.free()
@@ -85,6 +107,7 @@ func make_static(recursive : bool = false, is_from : bool = true) -> void :
 	if not next_cable : return
 	var next_is_from :bool = next_ban == next_cable.banana_from
 	next_cable.make_static(true, next_is_from)
+
 
 ## Creates a CSG polygon and hide the static mesh.
 ## if recursive parameter set to true, will make any connected cable
@@ -100,6 +123,7 @@ func make_dynamic(recursive : bool = false, is_from : bool = true) -> void :
 			add_child(dynamic_mesh)
 	else :
 		printerr("cable already dynamic")
+	click_mask.monitorable = false
 	dynamic_mesh.material = mat
 	var born_scale = banana_from.global_transform.basis.get_scale()
 	dynamic_mesh.polygon = draw_circle(6,0.005 * born_scale.x)
