@@ -26,9 +26,9 @@ var color : Color :
 		color = new_color
 		if cable_being_ploted and is_ploting :
 			cable_being_ploted.color = color
-## La distancia frente a la camara a cual se mantiene el cable
-## mientras se connecta
-const ARM_LENGTH = 40
+## The distance between the camera and the cable tip while connecting
+var arm_length : float = 1.0
+
 
 ## Sent whenever a cable is being started or ended.
 signal layout_changed
@@ -55,7 +55,7 @@ func add_mouse_point():
 	var mouse_pos := get_viewport().get_mouse_position()
 	var cam : Camera3D = get_viewport().get_camera_3d()
 	var Origine := cam.project_ray_origin(mouse_pos)
-	var End := Origine + cam.project_ray_normal(mouse_pos)*ARM_LENGTH
+	var End := Origine + cam.project_ray_normal(mouse_pos)*arm_length
 	
 	if cable_being_ploted.path.curve.point_count > 1:
 		cable_being_ploted.path.curve.remove_point(cable_being_ploted.path.curve.point_count-1)
@@ -64,6 +64,9 @@ func add_mouse_point():
 
 func start_cable():
 	is_ploting = true
+	arm_length = (
+			from.global_position - get_viewport().get_camera_3d().global_position
+	).length()
 	cable_being_ploted = Cable.new_cable(Color.from_hsv(randf(), 0.5, 0.5))
 	get_tree().root.add_child(cable_being_ploted)
 	cable_being_ploted.plug_banana(from)
