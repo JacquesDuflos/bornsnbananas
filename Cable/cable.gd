@@ -25,7 +25,7 @@ var color : Color : ## the color of the cable and bananas
 	set(c):
 		color = c
 		update_color(color)
-var hovered : bool = false
+var hovered : bool = false : set = on_hovered
 
 const CABLE = preload("uid://bvx44koknarr")
 const BANANA = preload("res://addons/bornsnbananas/Banana/banana.tscn")
@@ -70,6 +70,16 @@ func _on_click_mask_mouse_entered() -> void:
 
 func _on_click_mask_mouse_exited() -> void:
 	hovered = false
+
+
+func on_hovered(value):
+	hovered = value
+	if hovered :
+		mat.emission_enabled = true
+		mat.emission = Color.from_hsv(color.h, 0.5,1.0)
+		mat.emission_energy_multiplier = 1.2
+	else :
+		mat.emission_enabled = false
 
 
 ## A simple helper that creates points along a circl in a 2d plan.
