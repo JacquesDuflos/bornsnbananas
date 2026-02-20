@@ -61,7 +61,7 @@ func _input(event: InputEvent) -> void:
 		event.button_index == MOUSE_BUTTON_LEFT and
 		event.is_pressed()
 		):
-			print ("cable clicked")
+			_on_clic()
 
 
 func _on_click_mask_mouse_entered() -> void:
@@ -72,7 +72,7 @@ func _on_click_mask_mouse_exited() -> void:
 	hovered = false
 
 
-func on_hovered(value):
+func on_hovered(value: bool):
 	hovered = value
 	if hovered :
 		mat.emission_enabled = true
@@ -80,6 +80,21 @@ func on_hovered(value):
 		mat.emission_energy_multiplier = 1.2
 	else :
 		mat.emission_enabled = false
+
+
+func _on_clic():
+	print ("cable clicked")
+	var cam :Camera3D = get_viewport().get_camera_3d()
+	var from_to : Vector3 = banana_to.global_position - banana_from.global_position
+	var dist_cam : float = 1.5 * from_to.length()/2 / tan(deg_to_rad(cam.fov/2))
+	var midpoint : Vector3 = banana_from.global_position + from_to / 2
+	var cam_eje := from_to.normalized()
+	cam_eje = cam_eje.rotated(Vector3.UP, PI/2.0)
+	cam_eje = cam_eje.rotated(from_to, -PI/3)
+	cam.look_at_from_position(
+			midpoint + cam_eje * dist_cam,
+			midpoint
+	)
 
 
 ## A simple helper that creates points along a circl in a 2d plan.
